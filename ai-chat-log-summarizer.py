@@ -45,3 +45,18 @@ def get_message_statistics(user_messages, ai_messages):
     total_user, total_ai= len(user_messages), len(ai_messages)
     return total_user+total_ai, total_user, total_ai
 
+def extract_keywords(messages, top_n=5, use_tfidf=True):
+    stop_words = set(stopwords.words("english")).union({'like', 'yeah', 'hey', 'really', 'that', 'what'})
+    all_text= ' '.join(messages).lower()
+    
+    if use_tfidf:
+        try:
+            vectorizer= TfidfVectorizer(stop_words=list(stop_words), max_features= top_n, token_pattern=r'(?u)\b\w{4,}\b')
+            tfidf_matrix= vectorizer.fit_transform([all_text])
+            keywords= [k for k, _ in sorted(zip(vectorizer.get_feature_names_out(), tfidf_matrix.toarray()[0]), key= lambda x:x[1], reverse=True)[:top_n]]
+            return keywords if keywords else['general', 'topics', 'detected', 'no', 'specific']
+        except ValueError:
+            print("Warning: Empty vocabulary in TF-IDF. Using word frequency.")
+
+    words= [w for w in word_tokenize(all_text) if w.isalnum() and w not in stop_words and len(w)>=4]
+    return [w for w, _ in Counter(words).most_common(top_n)]
