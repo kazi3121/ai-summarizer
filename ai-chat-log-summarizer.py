@@ -40,3 +40,8 @@ def parse_chat_log(file_path):
     except FileNotFoundError:
         print(f"Error: File {file_path} not found.")
     return user_messages, ai_messages
+
+def get_message_statistics(user_messages, ai_messages):
+    total_user, total_ai= len(user_messages), len(ai_messages)
+    return total_user+total_ai, total_user, total_ai
+
