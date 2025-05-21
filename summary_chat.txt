@@ -1,0 +1,5 @@
+Summary:
+- The conversation had 6 exchanges.
+- User messages: 3, AI messages: 3.
+- The user asked mainly about Learning, Machine, Allows.
+- Most common keywords: learning, machine, allows, analytics, data.
