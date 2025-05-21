@@ -60,3 +60,29 @@ def extract_keywords(messages, top_n=5, use_tfidf=True):
 
     words= [w for w in word_tokenize(all_text) if w.isalnum() and w not in stop_words and len(w)>=4]
     return [w for w, _ in Counter(words).most_common(top_n)]
+
+def infer_conversation_nature(keywords):
+    return f"The user asked mainly about {', '.join(k.capitalize() for k in keywords[:3])}." if keywords else "The conversation covered general topics."
+
+
+def generate_summary(file_path, use_tfidf=True, output_file=None):
+    user_msgs, ai_msgs = parse_chat_log(file_path)
+    total, user_count, ai_count = get_message_statistics(user_msgs, ai_msgs)
+    if not total:
+        error_msg = "Error: No messages found in the chat log."
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(error_msg)
+            print(f"Error message saved to {output_file}")
+        return error_msg
+    keywords = extract_keywords(user_msgs + ai_msgs, top_n=5, use_tfidf=use_tfidf)
+    summary = (f"Summary:\n"
+               f"- The conversation had {total} exchanges.\n"
+               f"- User messages: {user_count}, AI messages: {ai_count}.\n"
+               f"- {infer_conversation_nature(keywords)}\n"
+               f"- Most common keywords: {', '.join(keywords)}.")
+    if output_file:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(summary)
+        print(f"Summary saved to {output_file}")
+    return summary
