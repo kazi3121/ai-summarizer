@@ -86,3 +86,18 @@ def generate_summary(file_path, use_tfidf=True, output_file=None):
             f.write(summary)
         print(f"Summary saved to {output_file}")
     return summary
+
+
+
+def summarize_multiple_logs(folder_path, use_tfidf=True, output_folder=None):
+    summaries = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.txt'):
+            file_path = os.path.join(folder_path, filename)
+            output_file = os.path.join(output_folder, f"summary_{filename}") if output_folder else None
+            summary = generate_summary(file_path, use_tfidf, output_file)
+            summaries.append(f"Summary for {filename}:\n{summary}\n")
+    return '\n'.join(summaries)
+
+if __name__ == "__main__":
+    print(generate_summary("input.txt", use_tfidf=True, output_file="summary.txt"))
